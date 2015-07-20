@@ -20,21 +20,22 @@ class NoLoginRequest:
         #    'Host': 'www.qiushibaike.com/',
         #    'DNT': '1'
         #}
-
-        #self._user_Agent = 'Mozilla/5.0 (Windows NT 6.3; WOW64; Trident/7.0; rv:11.0) like Gecko'
         self._header = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; WOW64; Trident/7.0; rv:11.0) like Gecko',}
 
 
     def start(self):
-        for key,value in self._header.items():
-            print(key,':',value)
+        #for key,value in self._header.items():
+            #print(key,':',value)
 
         try:
-            req = urllib.request.Request(self._url, headers=self._header)
-            #req.add_header(self._header)
-            response = urllib.request.urlopen(req)
-            data = response.read()
-            print(data)
+            for page in range(1,self._page+1):
+                requestUrl = self._url + str(page)
+                print('正在访问网页   '+requestUrl)
+                #req = urllib.request.Request(requestUrl, headers=self._header)
+                #response = urllib.request.urlopen(req)
+                #data = response.read().decode()
+                #print(data)
+
         except urllib.error.URLError as e:
             if hasattr(e, 'reason'):
                 print('Error Reason',e.reason)
@@ -47,8 +48,8 @@ class NoLoginRequest:
 
 
 
-
-noLoginRequest = NoLoginRequest('http://www.qiushibaike.com/', 5)
+#http://www.qiushibaike.com/8hr/page/2?s=4791266
+noLoginRequest = NoLoginRequest('http://www.qiushibaike.com/8hr/page/', 5)
 noLoginRequest.start()
 
 
