@@ -49,7 +49,11 @@ class NoLoginRequest:
                 saveFile(data, 'qiushibaike.html')
                 #print(data.decode())
                 data = data.decode()
-                pattern = re.compile()
+                pattern = re.compile('<div.*?class="author"><a.*?</a>.*?<a.*?>(.*?)</a>.*?<div.*?class'+
+                                     '="content">(.*?)', re.S)
+                items = re.findall(pattern, data)
+                for item in items:
+                    print(item[0],item[1])
 
         except urllib.error.URLError as e:
             if hasattr(e, 'reason'):
