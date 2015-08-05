@@ -11,20 +11,12 @@ import urllib.request
 from bs4 import BeautifulSoup
 import re
 
-#存储文件
-def saveFile(data, fileName):
-    #save_Path = 'E:\\Python\\SaveFile\\'
-    #save_Path += fileName
-    print('将网页写入到文件：' + fileName)
-    f_obj = open(fileName, 'wb')
-    f_obj.write(data)
-    f_obj.close()
-
 class NoLoginRequest:
     def __init__(self,url,page):
         self._url = url
         self._page = page
-        self._path = 'E:\\Python\\SaveFile\\'
+        self._path = 'E:\\Python\\SaveFile\\qiushibaike'
+        self._file = self._path + str(self._page) + '.html'
         #self._header={
         #    'Connection': 'Keep-Alive',
         #    'Accept': 'text/html, application/xhtml+xml, */*',
@@ -36,46 +28,62 @@ class NoLoginRequest:
         #}
         self._header = {'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; WOW64; Trident/7.0; rv:11.0) like Gecko',}
 
+    #存储文件
+    def saveFile(self, data, requestUrl, page):
+        self._file = self._path + page + '.html'
+        print('将网页:' + requestUrl + ' 写到文件：' + self._file)
+        f_obj = open(self._file, 'wb')
+        f_obj.write(data)
+        f_obj.close()
 
+    def getPageData(self):
+        requestUrl = self._url + str(page)
+        print('正在访问网页   ' + requestUrl)
+        req = urllib.request.Request(requestUrl, headers=self._header)
+        response = urllib.request.urlopen(req)
+        data = response.read().decode('UTF-8')
 
     def start(self):
-        #for key,value in self._header.items():
-            #print(key,':',value)
-
         try:
             for page in range(1,self._page+1):
-                requestUrl = self._url + str(page)
-                print('正在访问网页   ' + requestUrl)
-                #req = urllib.request.Request(requestUrl, headers=self._header)
-                #response = urllib.request.urlopen(req)
-                #data = response.read()
 
-                saveFileName = self._path + 'qiushibaike' + str(page) + '.html'
-                print(saveFileName)
-                #saveFile(data, saveFileName)
+                #print(data)
+                #self.saveFile(data, requestUrl, str(page))
+
+                #data = data.decode('unicode-escape')
+                #data = data.decode('UTF-8','ignore')
+                #encodeData = data.encode('GBK','ignore')
+                #encodeData = data.encode('GB18030')
+                #print('打开文件名：' + self._file)
+                #openFile = open(self._file, 'r')
+                #openData = openFile.read().encode('GBK')
+                #openFile.close()
+
+                #print(openData.encode('gbk','ignore'))
+                #print(openData.encode('gbk','ignore'))
+
+                #saveFileName = self._path + 'qiushibaike' + str(page) + '.html'
+                #print(saveFileName)
+                #self.saveFile(data, str(page))
                 #data = data.decode()
 
-                strDataFile = open(saveFileName)
-                strData = strDataFile.read()
-                print(strData)
-                #strData = strData.decode('UTF-8','ignore')
-                #soup = BeautifulSoup(open(saveFileName))
-                #soup = BeautifulSoup(strData)
-                #print(soup.prettify())
+                #.*?<span.*?"dash">.*?<i.*?class="number">(.*?)</i>
+                #.*?<div.*?class="stats">.*?<span.*?"status">.*?<i.*?class="number">(.*?)</i>.*?</span>
+                #.*?<div.*?class="stats">.*?<i.*?class="number">(.*?)</i>.*?</span>
+                #.*?<span.*?"dash">.*?<i.*?class="number">(.*?)</i>.*?</span>
+                #.*?<div.*?class="thumb">.*?<img.*?"(.*?".*?/>.*?</div>
+                #.*?<div.*?class="stats">.*?<i.*?class="number">(.*?)</i>.*?</span>.*?<span.*?"dash">.*?<i.*?class="number">(.*?)</i>.*?</span>
 
+                pattern = re.compile('<div.*?class="author">.*?<img.*?/>(.*?)</a>.*?</div>.*?<div.*?class="content">(.*?)<!--(.*?)-->.*?</div>(.*?)<div.*?class="stats">.*?<i.*?class="number">(.*?)</i>.*?</span>.*?<span.*?"dash">.*?<i.*?class="number">(.*?)</i>.*?</span>', re.S)
+                #pattern = re.compile('<div.*?class="thumb">.*?<a.*?<img.*?src="(.*?)".*?/>.*?</div>', re.S)
+                items = re.findall(pattern, data)
 
+                for item in items:
+                    havingImg = re.search("img",item[3])
+                    print(item)
+                    #if not havingImg:
+                    #    print(item[0],item[1],item[2],item[4],item[5])
 
-
-
-                #pattern = re.compile('<div.*?class="author"><a.*?</a>.*?<a.*?>(.*?)</a>.*?<div.*?class'+
-                                     #'="content">(.*?)', re.S)
-                #pattern = re.compile('<div.*?class="author">.*?<a.*?<img.*?(.*?)</a>.*?</div>', re.S)
-                #pattern = re.compile('<div.*?class="author">.*?<a.*?<img.*?/>.*?(.*?)</a>.*?</div>/*?<div.*?class="content">(.*?)</div>', re.S)
-                #items = re.findall(pattern, data)
-                #items = re.findall(pattern, '<div class="author"> <a href="/users/29365176" target="_blank"> <img src="http://pic.qiushibaike.com/system/avtnew/2936/29365176/medium/20150711113434.jpg" />磨头岩肥佬</a></div>')
-
-                #for item in items:
-                #    print(item)
 
         except urllib.error.URLError as e:
             if hasattr(e, 'reason'):
@@ -88,7 +96,7 @@ class NoLoginRequest:
 
 
 
-#
+
 noLoginRequest = NoLoginRequest('http://www.qiushibaike.com/8hr/page/', 1)
 noLoginRequest.start()
 
